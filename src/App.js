@@ -1,23 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
+import MainNotes from "./Components/MainNotes/MainNotes";
+import NavBar from "./Components/NavBar/NavBar";
+import UserContext from "./Context/UserContext";
+import { GlobalStyle } from "./style/GlobalStyle";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div id="app">
+      <UserContext>
+        <GlobalStyle />
+        <NavBar />
+        <MainNotes />
+      </UserContext>
     </div>
   );
 }

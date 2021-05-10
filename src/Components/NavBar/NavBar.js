@@ -18,8 +18,8 @@ const NavBar = () => {
 
   useEffect(async () => {
     setNotes([]);
-    const { url } = FILTER_NOTES(searchPriority);
-    const filtered_notes = await (await fetch(url)).json();
+    const { url, options } = FILTER_NOTES(searchPriority);
+    const filtered_notes = await (await fetch(url, options)).json();
     setNotes(filtered_notes);
   }, [searchPriority]);
 

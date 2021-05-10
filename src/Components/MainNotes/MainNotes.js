@@ -8,8 +8,8 @@ const MainNotes = () => {
   const { notes, setNotes } = useContext(UserStorage);
 
   useEffect(async () => {
-    const { url } = GET_NOTES();
-    const notes = await (await fetch(url)).json();
+    const { url, options } = GET_NOTES();
+    const notes = await (await fetch(url, options)).json();
 
     setNotes(notes);
   }, []);

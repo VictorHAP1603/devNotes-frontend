@@ -4,6 +4,10 @@ export const MainNotesContainer = styled.main`
   flex: 1;
   margin-left: 30px;
 
+  & > h1 {
+    text-align: center;
+  }
+
   ul {
     list-style: none;
     display: grid;
@@ -22,14 +26,17 @@ export const MainNotesContainer = styled.main`
         color: #333;
       }
 
-      div {
+      div.header-note {
         display: flex;
         justify-content: space-between;
+        height: 40px;
 
         div {
           color: #ffeae6;
           cursor: pointer;
           transition: all 0.4s;
+          width: 40%;
+          text-align: right;
 
           &:hover {
             color: #eb8f7a;
@@ -51,9 +58,12 @@ export const MainNotesContainer = styled.main`
       }
 
       span {
+        display: block;
         color: #c4c4c4;
         cursor: pointer;
         transition: all 0.4s;
+        width: 40%;
+        height: 30px;
         &:hover {
           color: #eb8f7a;
         }

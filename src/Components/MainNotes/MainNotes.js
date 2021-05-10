@@ -16,17 +16,22 @@ const MainNotes = () => {
 
   return (
     <MainNotesContainer>
-      <ul>
-        {notes &&
-          notes.map(({ _id, title, notes, priority }) => (
-            <NoteItem
-              key={_id}
-              title={title}
-              notes={notes}
-              priority={priority}
-            />
-          ))}
-      </ul>
+      {notes.length === 0 && <h1>Não possui nenhuma anotação</h1>}
+
+      {notes.length !== 0 && (
+        <ul>
+          {notes &&
+            notes.map(({ _id, title, notes, priority }, index) => (
+              <NoteItem
+                key={_id}
+                title={title}
+                note={notes}
+                priority={priority}
+                id={_id}
+              />
+            ))}
+        </ul>
+      )}
     </MainNotesContainer>
   );
 };

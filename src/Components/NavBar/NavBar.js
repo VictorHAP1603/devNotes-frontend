@@ -1,67 +1,135 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UserStorage } from "../../Context/UserContext";
-import { POST_NOTES } from "../../services/api";
+import { FILTER_NOTES, POST_NOTES } from "../../services/api";
+import InputBlock from "./InputBlock";
+import RadioBlock from "./RadioBlock";
 import { NavBarContainer } from "./style";
+import TextAreaBlock from "./TextAreaBlock";
 
 const NavBar = () => {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
+  const [priorityValue, setPriorityValue] = useState(false);
+  const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
 
-  const { notes, setNotes } = useContext(UserStorage);
+  const { notes, setNotes, searchPriority, setSearchPriority } = useContext(
+    UserStorage
+  );
+
+  useEffect(async () => {
+    setNotes([]);
+    const { url } = FILTER_NOTES(searchPriority);
+    const filtered_notes = await (await fetch(url)).json();
+    setNotes(filtered_notes);
+  }, [searchPriority]);
 
   async function createNote(event) {
     event.preventDefault();
-    const { url, options } = POST_NOTES({
-      title,
-      notes: note,
-      priority: true,
-    });
 
     try {
-      const response = await fetch(url, options);
-      const data = await response.json();
+      if (note !== "" && title !== "") {
+        const { url, options } = POST_NOTES({
+          title,
+          notes: note,
+          priority: priorityValue,
+        });
 
-      if (!response.ok) throw new Error(data.error);
-      setNotes([...notes, data]);
+        const response = await fetch(url, options);
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error);
+        filterNotesWhenCreated(data);
+        setTitle("");
+        setNote("");
+      }
     } catch (err) {
       console.log(err);
     }
   }
 
-  return (
-    <NavBarContainer>
-      <strong>Caderno de Notas</strong>
-      <form onSubmit={createNote}>
-        <div className="input-block">
-          <label htmlFor="title">Título da Anotação</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
+  function filterNotesWhenCreated(data) {
+    if (searchPriority === "true" && data.priority === true) {
+      setNotes([...notes, data]);
+    } else if (searchPriority === "false" && data.priority === false) {
+      setNotes([...notes, data]);
+    } else if (searchPriority === "") {
+      setNotes([...notes, data]);
+    }
+  }
 
-        <div className="input-block">
-          <label htmlFor="notes">Anotações</label>
-          <textarea
-            id="notes"
-            name="notes"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
-        </div>
+  function handleButtonDisabled() {
+    if (title !== "" && note !== "") {
+      setButtonIsDisabled(false);
+    } else {
+      setButtonIsDisabled(true);
+    }
+  }
+
+  return (
+    <NavBarContainer buttonIsDisabled={buttonIsDisabled}>
+      <strong>Caderno de Notas</strong>
+
+      <form onSubmit={createNote}>
+        <InputBlock
+          element="input"
+          title="Título da Anotação"
+          id="title"
+          value={title}
+          setValue={setTitle}
+          handleButtonDisabled={handleButtonDisabled}
+        />
+
+        <TextAreaBlock
+          title="Anotações"
+          id="notes"
+          value={note}
+          setValue={setNote}
+          handleButtonDisabled={handleButtonDisabled}
+        />
 
         <div className="radios">
-          <label htmlFor="false">Não é Prioridade</label>
-          <input type="radio" id="false" />
-          <label htmlFor="true">É Prioridade</label>
-          <input type="radio" id="true" />
+          <RadioBlock
+            setValue={setPriorityValue}
+            checked={priorityValue}
+            value={false}
+            id="false"
+            label="Não é Prioridade"
+          />
+          <RadioBlock
+            setValue={setPriorityValue}
+            checked={priorityValue}
+            value={true}
+            id="true"
+            label="É Prioridade"
+          />
         </div>
 
         <button type="submit">Salvar</button>
       </form>
+
+      <div className="search-priority">
+        <RadioBlock
+          setValue={setSearchPriority}
+          checked={searchPriority}
+          value=""
+          label="Todos"
+          id="todos"
+        />
+        <RadioBlock
+          setValue={setSearchPriority}
+          checked={searchPriority}
+          value="true"
+          label="Prioridade"
+          id="prioridade"
+        />
+        <RadioBlock
+          setValue={setSearchPriority}
+          checked={searchPriority}
+          value="false"
+          label="Não Prioridade"
+          id="sem-prioridade"
+        />
+      </div>
     </NavBarContainer>
   );
 };
